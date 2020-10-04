@@ -1,3 +1,4 @@
+# ライブラリをインポート
 import numpy as np
 import pandas as pd
 from selenium.webdriver.support.select import Select
@@ -9,6 +10,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 
+# ホテル名やプラン名を格納する変数を用意
 options = Options()
 options.add_argument('--headless')
 hotels_name = []
@@ -18,6 +20,7 @@ geter_date = []
 hotel_header = []
 week = range(32)
 
+# スクレイピングする元のページのurl
 driver = webdriver.Chrome('doriver_path', chrome_options=options)
 url_nagomi = 'https://www.jalan.net/yad321124/plan/?screenId=UWW3001&yadNo=321124&smlCd=260208&distCd=01&ccnt=yads2'
 url_kawaramachi = 'https://www.jalan.net/yad319955/plan/?screenId=UWW3001&yadNo=319955&smlCd=260205&distCd=01&ccnt=yads2'
@@ -27,6 +30,7 @@ date = datetime.date.today()
 actions = ActionChains(driver)
 
 
+# ページをスクレイピング
 def main(url=url_hotel_gracery):
     driver.get(url)
     header = driver.find_element_by_id('yado_header_hotel_name')
@@ -79,11 +83,13 @@ def main(url=url_hotel_gracery):
     driver.quit()
 
 
+# ~円になってるので取り除く
 def replace_price(hotels_price):
     price_str = [int(s.replace('円', '').replace(',', '')) for s in hotels_price]
     return np.array(price_str).reshape(-1, 1)
 
 
+# データフレームの作成とCSVの出力
 def data_frame(replace_price, geter_date, plan_name):
     df = pd.DataFrame(data=replace_price(hotels_price), columns=['price'])
     df.insert(0, 'room_type', plan_name)
